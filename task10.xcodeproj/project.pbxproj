@@ -45,6 +45,7 @@
 		B09DEE542EC0D96200F65A55 /* GamePlayerViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09DEE532EC0D96200F65A55 /* GamePlayerViewCell.swift */; };
 		B09DEE562EC0F3BC00F65A55 /* AddPointsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09DEE552EC0F3BC00F65A55 /* AddPointsCollectionViewCell.swift */; };
 		B0A502BC2ECCB9C200A5C859 /* TimerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A502BA2ECCB9B900A5C859 /* TimerService.swift */; };
+		B0A7B0E52ED08766003D8C4D /* GameStateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0A7B0E42ED08766003D8C4D /* GameStateService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +108,7 @@
 		B09DEE532EC0D96200F65A55 /* GamePlayerViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePlayerViewCell.swift; sourceTree = "<group>"; };
 		B09DEE552EC0F3BC00F65A55 /* AddPointsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPointsCollectionViewCell.swift; sourceTree = "<group>"; };
 		B0A502BA2ECCB9B900A5C859 /* TimerService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimerService.swift; sourceTree = "<group>"; };
+		B0A7B0E42ED08766003D8C4D /* GameStateService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GameStateService.swift; path = task10/Helpers/GameStateService.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -217,6 +219,7 @@
 		B08BCC382EBBD21C000DE635 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				B0A7B0E42ED08766003D8C4D /* GameStateService.swift */,
 				B0A502BA2ECCB9B900A5C859 /* TimerService.swift */,
 				B08BCC392EBBD259000DE635 /* +UIColor.swift */,
 			);
@@ -493,6 +496,7 @@
 				B08BCC482EBC04BE000DE635 /* AddPlayerCell.swift in Sources */,
 				B09DEE562EC0F3BC00F65A55 /* AddPointsCollectionViewCell.swift in Sources */,
 				B09A1AF92EC23AD80082018C /* UserService.swift in Sources */,
+				B0A7B0E52ED08766003D8C4D /* GameStateService.swift in Sources */,
 				B098013A2EC5947800162325 /* TurnService.swift in Sources */,
 				B08BCC3A2EBBD259000DE635 /* +UIColor.swift in Sources */,
 				B094A8142EBCFE0900C83139 /* ScoreTableViewCell.swift in Sources */,

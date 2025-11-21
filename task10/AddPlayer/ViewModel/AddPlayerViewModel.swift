@@ -8,8 +8,7 @@
 import Foundation
 
 class AddPlayerViewModel {
-    var users: [UserModel] = []
-    var errorMessage: String? = nil
+    private var users: [UserModel] = []
 
     private let userService: UserServiceProtocol
 
@@ -27,9 +26,6 @@ class AddPlayerViewModel {
         
         if userService.createUser(newUser) {
             loadUsers()
-            errorMessage = nil
-        } else {
-            errorMessage = "Failed to create user"
         }
     }
 }

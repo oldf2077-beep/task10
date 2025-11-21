@@ -33,12 +33,6 @@ class NewGameViewController: BaseViewController {
         static let animationDuration: TimeInterval = 0.3
     }
     
-    enum UserDefaultsKeys {
-        static let timerSecondsElapsed = "gameTimerSecondsElapsed"
-        static let timerIsRunning = "gameTimerIsRunning"
-        static let currentPlayerIndex = "gameCurrentPlayerIndex"
-    }
-    
     lazy var leftNavigationButton: UIButton = {
         let button = UIButton(type: .system)
         button.titleLabel?.font = UIFont.nunito(17, .extraBold)
@@ -162,7 +156,7 @@ class NewGameViewController: BaseViewController {
     }
     
     @objc func leftNavigationButtonTapped(_ sender: UIBarButtonItem) {
-        guard !viewModel.users.isEmpty else { return }
+        guard viewModel.hasUsers() else { return }
         navigationController?.popViewController(animated: false)
     }
     
@@ -177,7 +171,7 @@ class NewGameViewController: BaseViewController {
         collectionView.reloadData()
         adjustCollectionViewHeight()
         
-        if viewModel.users.isEmpty {
+        if !viewModel.hasUsers() {
             isFirstTimePresented = true
             navigationItem.leftBarButtonItem?.isHidden = isFirstTimePresented
         }
@@ -186,16 +180,18 @@ class NewGameViewController: BaseViewController {
 
 extension NewGameViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.totalUsers
+        return viewModel.getTotalUsers()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlayerCollectionViewCell.identifier, for: indexPath) as! PlayerCollectionViewCell
-        cell.configure(with: viewModel.users[indexPath.item].name) { [weak self] gesture in
-            self?.handleDragGesture(gesture, for: cell, at: indexPath)
-        }
-        cell.deleteAction = { [weak self] in
-            self?.deleteItem(at: indexPath.item)
+        if let name = viewModel.getUserName(at: indexPath.item) {
+            cell.configure(with: name) { [weak self] gesture in
+                self?.handleDragGesture(gesture, for: cell, at: indexPath)
+            }
+            cell.deleteAction = { [weak self] in
+                self?.deleteItem(at: indexPath.item)
+            }
         }
         return cell
     }
@@ -290,28 +286,13 @@ private extension NewGameViewController {
         }
     }
     
-    func clearGameState() {
-        let userDefaults = UserDefaults.standard
-        userDefaults.removeObject(forKey: UserDefaultsKeys.timerSecondsElapsed)
-        userDefaults.removeObject(forKey: UserDefaultsKeys.timerIsRunning)
-        userDefaults.removeObject(forKey: UserDefaultsKeys.currentPlayerIndex)
-        userDefaults.synchronize()
-    }
-    
     func validateAndStartGame() {
-        guard !viewModel.users.isEmpty else {
-            showAlert(message: "Empty players list")
+        if let validationError = viewModel.validateGameStart() {
+            showAlert(message: validationError.message)
             return
         }
         
-        let playerNames = viewModel.users.map { $0.name }
-        
-        if Set(playerNames).count != playerNames.count {
-            showAlert(message: "Adding players with the same name is prohibited")
-            return
-        }
-        
-        clearGameState()
+        viewModel.clearGameState()
         let gameViewController = GameViewController()
         navigationController?.setViewControllers([gameViewController], animated: false)
     }

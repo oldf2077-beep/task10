@@ -46,10 +46,6 @@ class GameViewController: BaseViewController {
         static let diceImageSize: CGFloat = 120
     }
     
-    enum UserDefaultsKeys {
-        static let currentPlayerIndex = "gameCurrentPlayerIndex"
-    }
-    
     lazy var leftNavigationButton: UIButton = {
         let button = UIButton(type: .system)
         button.titleLabel?.font = UIFont.nunito(17, .extraBold)
@@ -179,10 +175,7 @@ class GameViewController: BaseViewController {
     
     let addPointsValues = ["-10", "-5", "-1", "+5", "+10"]
     
-    private let timerService = TimerService()
     private var blurView: UIVisualEffectView?
-    
-    private let userDefaults = UserDefaults.standard
     
     lazy var letterCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -212,13 +205,8 @@ class GameViewController: BaseViewController {
         navigationController?.setViewControllers([self], animated: true)
     }
     
-    deinit {
-        timerService.stop()
-    }
-    
     @objc func resetButtonTapped() {
-        timerService.reset()
-        timerService.clearSavedState()
+        viewModel.resetTimer()
     }
     
     @objc func rollButtonTapped() {
@@ -226,18 +214,18 @@ class GameViewController: BaseViewController {
     }
     
     @objc func undoButtonTapped() {
-        guard viewModel.hasUsers else { return }
-        let playerIndex = viewModel.undoTurn()
+        guard viewModel.hasUsers() else { return }
+        guard let playerIndex = viewModel.undoTurn() else { return }
         guard viewModel.isValidIndex(playerIndex) else { return }
         let indexPath = IndexPath(item: playerIndex, section: 0)
         playerCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
-        saveCurrentPlayerIndex(playerIndex)
+        viewModel.saveCurrentPlayerIndex(playerIndex)
         playerCollectionView.reloadData()
     }
     
     @objc func incrementButtonTapped() {
         if let index = playerCollectionView.getCenterIndexPath()?.item {
-            viewModel.incrementScore(for: viewModel.users[index])
+            viewModel.incrementScore(for: index)
             scrollToPlayer(offset: 1)
         }
         playerCollectionView.reloadData()
@@ -295,11 +283,11 @@ class GameViewController: BaseViewController {
 extension GameViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == playerCollectionView {
-            return viewModel.totalUsers
+            return viewModel.getTotalUsers()
         } else if collectionView == addPointsCollectionView {
             return addPointsValues.count
         } else if collectionView == letterCollectionView {
-            return viewModel.totalUsers
+            return viewModel.getTotalUsers()
         }
         return 0
     }
@@ -309,7 +297,10 @@ extension GameViewController: UICollectionViewDataSource {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GamePlayerViewCell.identifier, for: indexPath) as? GamePlayerViewCell else {
                 return UICollectionViewCell()
             }
-            cell.configure(with: viewModel.users[indexPath.item].name, score: Int(viewModel.users[indexPath.item].score))
+            if let name = viewModel.getUserName(at: indexPath.item),
+               let score = viewModel.getUserScore(at: indexPath.item) {
+                cell.configure(with: name, score: Int(score))
+            }
             return cell
         } else if collectionView == addPointsCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: AddPointsCollectionViewCell.identifier, for: indexPath) as? AddPointsCollectionViewCell else {
@@ -322,8 +313,8 @@ extension GameViewController: UICollectionViewDataSource {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LetterCollectionViewCell.identifier, for: indexPath) as? LetterCollectionViewCell else {
                 return UICollectionViewCell()
             }
-            if let firstLetter = viewModel.users[indexPath.item].name.first {
-                cell.configure(with: String(firstLetter))
+            if let firstLetter = viewModel.getUserFirstLetter(at: indexPath.item) {
+                cell.configure(with: firstLetter)
             }
             if indexPath.item == 0 {
                 cell.title.textColor = .white
@@ -352,7 +343,7 @@ extension GameViewController: CollectionViewCellDelegate {
               let points = Int(pointsString) else { return }
         
         if let index = playerCollectionView.getCenterIndexPath()?.item {
-            viewModel.increaseScore(for: viewModel.users[index], on: points)
+            viewModel.increaseScore(for: index, on: points)
             scrollToPlayer(offset: 1)
         }
         playerCollectionView.reloadData()
@@ -445,38 +436,38 @@ private extension GameViewController {
             
             letterCollectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             letterCollectionView.topAnchor.constraint(equalTo: addPointsCollectionView.bottomAnchor, constant: LayoutConstants.letterCollectionViewTopMargin),
-            letterCollectionView.widthAnchor.constraint(equalToConstant: CGFloat(viewModel.totalUsers) * LayoutConstants.letterCollectionViewItemWidth),
+            letterCollectionView.widthAnchor.constraint(equalToConstant: CGFloat(viewModel.getTotalUsers()) * LayoutConstants.letterCollectionViewItemWidth),
             letterCollectionView.heightAnchor.constraint(equalToConstant: LayoutConstants.letterCollectionViewHeight)
         ])
     }
     
     func setupTimerService() {
-        timerService.delegate = self
-        timerService.stop()
+        viewModel.timerService.delegate = self
+        viewModel.timerService.stop()
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.updateTimerLabel(secondsElapsed: self.timerService.secondsElapsed)
-            self.updateButtonState(isRunning: false)
+            self.updateTimerLabel(secondsElapsed: self.viewModel.getTimerSecondsElapsed())
+            self.updateButtonState(isRunning: self.viewModel.getTimerIsRunning())
         }
     }
     
     func saveGameState() {
-        guard viewModel.hasUsers else { return }
+        guard viewModel.hasUsers() else { return }
         if let currentIndex = playerCollectionView.getCenterIndexPath()?.item,
            viewModel.isValidIndex(currentIndex) {
-            saveCurrentPlayerIndex(currentIndex)
+            viewModel.saveCurrentPlayerIndex(currentIndex)
         }
     }
     
     func restoreGameState() {
-        guard viewModel.hasUsers else { return }
+        guard viewModel.hasUsers() else { return }
         
-        let savedPlayerIndex = userDefaults.integer(forKey: UserDefaultsKeys.currentPlayerIndex)
+        let savedPlayerIndex = viewModel.getCurrentPlayerIndex()
         guard viewModel.isValidIndex(savedPlayerIndex) else { return }
         
         DispatchQueue.main.async { [weak self] in
-            guard let self = self, self.viewModel.hasUsers else { return }
+            guard let self = self, self.viewModel.hasUsers() else { return }
             let indexPath = IndexPath(item: savedPlayerIndex, section: 0)
             
             guard self.viewModel.isValidIndex(indexPath.item) else { return }
@@ -491,11 +482,6 @@ private extension GameViewController {
                 self.selectLetterCollectionViewCell(indexPath)
             }
         }
-    }
-    
-    func saveCurrentPlayerIndex(_ index: Int) {
-        userDefaults.set(index, forKey: UserDefaultsKeys.currentPlayerIndex)
-        userDefaults.synchronize()
     }
     
     func showDiceBlur() {
@@ -548,24 +534,17 @@ private extension GameViewController {
     }
     
     func scrollToPlayer(offset: Int) {
-        guard viewModel.hasUsers else { return }
+        guard viewModel.hasUsers() else { return }
         guard let currentIndexPath = playerCollectionView.getCenterIndexPath() else { return }
         
         let currentIndex = currentIndexPath.item
-        let newIndex: Int
-        if offset > 0 {
-            newIndex = (currentIndex + offset) % viewModel.totalUsers
-        } else {
-            newIndex = (currentIndex + offset + viewModel.totalUsers) % viewModel.totalUsers
-        }
-        
-        guard viewModel.isValidIndex(newIndex) else { return }
+        guard let newIndex = viewModel.getNextPlayerIndex(from: currentIndex, offset: offset) else { return }
         
         let indexPath = IndexPath(item: newIndex, section: 0)
         playerCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         deselectLetterCollectionViewCell(currentIndexPath)
         selectLetterCollectionViewCell(indexPath)
-        saveCurrentPlayerIndex(newIndex)
+        viewModel.saveCurrentPlayerIndex(newIndex)
     }
     
     func updateLetterCell(at indexPath: IndexPath, isSelected: Bool) {
@@ -584,10 +563,10 @@ private extension GameViewController {
     }
     
     @objc func startPauseButtonTapped() {
-        if timerService.isRunning {
-            timerService.pause()
+        if viewModel.getTimerIsRunning() {
+            viewModel.pauseTimer()
         } else {
-            timerService.start()
+            viewModel.startTimer()
         }
     }
     

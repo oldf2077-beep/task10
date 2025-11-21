@@ -12,9 +12,8 @@ class ResultsViewModel {
         static let topUsersLimit = 3
     }
     
-    var topUsers: [UserModel] = []
-    var turns: [TurnModel] = []
-    var errorMessage: String? = nil
+    private var topUsers: [UserModel] = []
+    private var turns: [TurnModel] = []
 
     private let userService: UserServiceProtocol
     private let turnService: TurnServiceProtocol
@@ -34,11 +33,37 @@ class ResultsViewModel {
         turns = turnService.fetchTurns()
     }
     
-    var totalUsers: Int {
+    func getTopUser(at index: Int) -> UserModel? {
+        guard index >= 0 && index < topUsers.count else { return nil }
+        return topUsers[index]
+    }
+    
+    func getTopUserName(at index: Int) -> String? {
+        return getTopUser(at: index)?.name
+    }
+    
+    func getTopUserScore(at index: Int) -> Int32? {
+        return getTopUser(at: index)?.score
+    }
+    
+    func getTurn(at index: Int) -> TurnModel? {
+        guard index >= 0 && index < turns.count else { return nil }
+        return turns[index]
+    }
+    
+    func getTurnName(at index: Int) -> String? {
+        return getTurn(at: index)?.name
+    }
+    
+    func getTurnScore(at index: Int) -> Int32? {
+        return getTurn(at: index)?.score
+    }
+    
+    func getTotalUsers() -> Int {
         return topUsers.count
     }
     
-    var totalTurns: Int {
+    func getTotalTurns() -> Int {
         return turns.count
     }
 }

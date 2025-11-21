@@ -122,7 +122,7 @@ private extension ResultsViewController {
             scoreTable.topAnchor.constraint(equalTo: pageTitle.bottomAnchor, constant: LayoutConstants.scoreTableTopMargin),
             scoreTable.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: LayoutConstants.horizontalMargin),
             scoreTable.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -LayoutConstants.horizontalMargin),
-            scoreTable.heightAnchor.constraint(equalToConstant: CGFloat(LayoutConstants.scoreTableRowHeight * CGFloat(viewModel.totalUsers))),
+            scoreTable.heightAnchor.constraint(equalToConstant: CGFloat(LayoutConstants.scoreTableRowHeight * CGFloat(viewModel.getTotalUsers()))),
             
             turnsView.topAnchor.constraint(equalTo: scoreTable.bottomAnchor, constant: LayoutConstants.turnsViewTopMargin),
             turnsView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -144,9 +144,9 @@ private extension ResultsViewController {
 extension ResultsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == scoreTable {
-            return viewModel.totalUsers
+            return viewModel.getTotalUsers()
         } else if tableView == turnsTable {
-            return viewModel.totalTurns
+            return viewModel.getTotalTurns()
         }
         return 0
     }
@@ -156,15 +156,19 @@ extension ResultsViewController: UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ScoreTableViewCell.identifier, for: indexPath) as? ScoreTableViewCell else {
                 fatalError("Unable to dequeue")
             }
-            cell.configure(position: indexPath.item + 1, name: viewModel.topUsers[indexPath.item].name, score: Int(viewModel.topUsers[indexPath.item].score))
-
+            if let name = viewModel.getTopUserName(at: indexPath.item),
+               let score = viewModel.getTopUserScore(at: indexPath.item) {
+                cell.configure(position: indexPath.item + 1, name: name, score: Int(score))
+            }
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: TurnTableViewCell.identifier, for: indexPath) as? TurnTableViewCell else {
                 fatalError("Unable to dequeue")
             }
-            cell.configure(name: viewModel.turns[indexPath.item].name, score: Int(viewModel.turns[indexPath.item].score))
-
+            if let name = viewModel.getTurnName(at: indexPath.item),
+               let score = viewModel.getTurnScore(at: indexPath.item) {
+                cell.configure(name: name, score: Int(score))
+            }
             return cell
         }
     }
