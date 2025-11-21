@@ -157,6 +157,7 @@
 		B08BCBFE2EBBC1A0000DE635 /* task10 */ = {
 			isa = PBXGroup;
 			children = (
+				B08BCC322EBBC2F9000DE635 /* NewGame */,
 				B09A1AF32EC239CC0082018C /* Model */,
 				B094A8102EBCF4BA00C83139 /* Results */,
 				B094A80B2EBCF34200C83139 /* Game */,
@@ -164,9 +165,8 @@
 				B08BCC3B2EBBD78D000DE635 /* Fonts */,
 				B08BCC382EBBD21C000DE635 /* Helpers */,
 				B08BCC102EBBC1A2000DE635 /* Info.plist */,
-				B08BCC352EBBC642000DE635 /* System */,
-				B08BCC322EBBC2F9000DE635 /* NewGame */,
 				B094A8112EBCF5E100C83139 /* BaseViewController.swift */,
+				B08BCC352EBBC642000DE635 /* System */,
 			);
 			path = task10;
 			sourceTree = "<group>";
@@ -191,11 +191,9 @@
 		B08BCC322EBBC2F9000DE635 /* NewGame */ = {
 			isa = PBXGroup;
 			children = (
+				B0A7B0E32ED08362003D8C4D /* View */,
+				B0A7B0E22ED0835A003D8C4D /* ViewModel */,
 				B08BCC332EBBC33C000DE635 /* NewGameViewController.swift */,
-				B08BCC452EBBE86C000DE635 /* PlayerCollectionViewCell.swift */,
-				B08BCC472EBC04BE000DE635 /* AddPlayerCell.swift */,
-				B09DCD6B2EBE569A006AC386 /* DragButton.swift */,
-				B09A1AFA2EC23B850082018C /* NewGameViewModel.swift */,
 			);
 			path = NewGame;
 			sourceTree = "<group>";
@@ -238,8 +236,8 @@
 		B094A8082EBCE4F900C83139 /* AddPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				B0A7B0E12ED0834F003D8C4D /* ViewModel */,
 				B094A8092EBCE53200C83139 /* AddPlayerViewController.swift */,
-				B09A1AFD2EC24D7C0082018C /* AddPlayerViewModel.swift */,
 			);
 			path = AddPlayer;
 			sourceTree = "<group>";
@@ -247,11 +245,9 @@
 		B094A80B2EBCF34200C83139 /* Game */ = {
 			isa = PBXGroup;
 			children = (
+				B0A7B0E02ED08343003D8C4D /* View */,
+				B0A7B0DF2ED0833A003D8C4D /* ViewModel */,
 				B094A80C2EBCF34D00C83139 /* GameViewController.swift */,
-				B09DEE532EC0D96200F65A55 /* GamePlayerViewCell.swift */,
-				B09DEE552EC0F3BC00F65A55 /* AddPointsCollectionViewCell.swift */,
-				B045400F2EC4906800675674 /* GameViewModel.swift */,
-				B09801352EC5891B00162325 /* LetterCollectionViewCell.swift */,
 			);
 			path = Game;
 			sourceTree = "<group>";
@@ -259,10 +255,9 @@
 		B094A8102EBCF4BA00C83139 /* Results */ = {
 			isa = PBXGroup;
 			children = (
+				B0A7B0DE2ED08329003D8C4D /* View */,
+				B0A7B0DD2ED08318003D8C4D /* ViewModel */,
 				B094A80E2EBCF40900C83139 /* ResultsViewController.swift */,
-				B094A8132EBCFE0900C83139 /* ScoreTableViewCell.swift */,
-				B09DCD6D2EBF99B7006AC386 /* TurnTableViewCell.swift */,
-				B045400D2EC48C4000675674 /* ResultsViewModel.swift */,
 			);
 			path = Results;
 			sourceTree = "<group>";
@@ -276,6 +271,67 @@
 				B09801392EC5947800162325 /* TurnService.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		B0A7B0DD2ED08318003D8C4D /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				B045400D2EC48C4000675674 /* ResultsViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		B0A7B0DE2ED08329003D8C4D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				B09DCD6D2EBF99B7006AC386 /* TurnTableViewCell.swift */,
+				B094A8132EBCFE0900C83139 /* ScoreTableViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		B0A7B0DF2ED0833A003D8C4D /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				B045400F2EC4906800675674 /* GameViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		B0A7B0E02ED08343003D8C4D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				B09801352EC5891B00162325 /* LetterCollectionViewCell.swift */,
+				B09DEE552EC0F3BC00F65A55 /* AddPointsCollectionViewCell.swift */,
+				B09DEE532EC0D96200F65A55 /* GamePlayerViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		B0A7B0E12ED0834F003D8C4D /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				B09A1AFD2EC24D7C0082018C /* AddPlayerViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		B0A7B0E22ED0835A003D8C4D /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				B09A1AFA2EC23B850082018C /* NewGameViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		B0A7B0E32ED08362003D8C4D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				B08BCC472EBC04BE000DE635 /* AddPlayerCell.swift */,
+				B09DCD6B2EBE569A006AC386 /* DragButton.swift */,
+				B08BCC452EBBE86C000DE635 /* PlayerCollectionViewCell.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
